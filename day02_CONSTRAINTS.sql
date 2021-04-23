@@ -99,4 +99,8 @@ CREATE TABLE sehirler
 INSERT INTO sehirler VALUES(54, 'sakarya', 1250000);
 INSERT INTO sehirler VALUES('', '', 1800000);
 
-SELECT * FROM sehýrler;
+--PARCALI VERI GIRISI--
+INSERT INTO sehirler(nufus) VALUES(150000);
+INSERT INTO sehirler(nufus) VALUES(-150000);
+
+SELECT * FROM sehirler;
