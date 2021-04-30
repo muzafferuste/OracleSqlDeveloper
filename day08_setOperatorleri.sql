@@ -152,6 +152,7 @@
     verileri dondurur. Yani 1. sorgu ile 2. sorgu arasindaki farklý olanlarý 
     dondurur
     
+    -- MINUS'da UNION gibi tekrarli satirlardan sadece bir tanesi listeler.
     
     Syntax:
     ----------
@@ -198,5 +199,3 @@
     MINUS
     SELECT isim, sehir FROM personel
     WHERE sehir = 'Istanbul';
-    
-    -- MINUS'da UNION gibi tekrarli satirlardan sadece bir tanesi listeler.
