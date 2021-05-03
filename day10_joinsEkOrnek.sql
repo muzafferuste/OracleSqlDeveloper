@@ -1,5 +1,4 @@
-    CREATE TABLE bolumler 
-    (
+    CREATE TABLE bolumler(
       bolum_id   NUMBER(2) CONSTRAINT bolum_pk PRIMARY KEY,
       bolum_isim VARCHAR2(14),
       konum      VARCHAR2(13)
@@ -10,22 +9,24 @@
     INSERT INTO bolumler VALUES (30,'SATIS','IZMIR');
     INSERT INTO bolumler VALUES (40,'ISLETME','BURSA');
     INSERT INTO bolumler VALUES (50,'DEPO', 'YOZGAT');
-?
-    CREATE TABLE personel
-    (
+   
+	SELECT * FROM nls_session_parameters WHERE parameter = 'NLS_DATE_LANGUAGE';
+	ALTER SESSION SET NLS_DATE_FORMAT = 'DD-MM-YYYY';
+   
+    CREATE TABLE personel(
       personel_id   NUMBER(4) CONSTRAINT personel_pk PRIMARY KEY,
       personel_isim VARCHAR2(10),
       meslek        VARCHAR2(9),
       mudur_id      NUMBER(4),
       ise_baslama   DATE,
       maas          NUMBER(7,2),
-      bolum_id      NUMBER(2) 
+      bolum_id      NUMBER(2)
     );
-    
-   SELECT * FROM bolumler;
+   
+   	SELECT * FROM bolumler;
   
     INSERT INTO personel VALUES (7369,'AHMET','KATIP',7902,'17-12-1980',800,20);
-    INSERT INTO personel VALUES (7499,'BAHATTIN','SATIS',7698,'20-2-1981',1600,30);
+    INSERT INTO personel VALUES (7499,'BAHATTIN','SATIS',7698,'20-02-1981',1600,30);
     INSERT INTO personel VALUES (7521,'NESE','SATIS',7698,'22-2-1981',1250,30);
     INSERT INTO personel VALUES (7566,'MUZAFFER','MUDUR',7839,'2-4-1981',2975,20);
     INSERT INTO personel VALUES (7654,'MUHAMMET','SATIS',7698,'28-9-1981',1250,30);
@@ -43,7 +44,60 @@
      
     SELECT * FROM personel;
 
- /* -----------------------------------------------------------------------------
+ /* ----------------------------------------------------------------------------
   ORNEK1: SATIS ve MUHASABE bolumlerinde calisan personelin isimlerini ve 
   bolumlerini, once bolum sonra isim sýralý olarak listeleyiniz
 ------------------------------------------------------------------------------*/
+	SELECT p.personel_isim, b.bolum_isim
+	FROM bolumler b
+	JOIN personel p
+	ON b.bolum_id = p.bolum_id
+	WHERE b.bolum_id IN(10, 30)
+	ORDER BY b.bolum_isim, p.personel_isim;
+	
+/* -----------------------------------------------------------------------------
+  ORNEK2: SATIS,ISLETME ve DEPO bolumlerinde calisan personelin isimlerini,  
+  bolumlerini ve ise_baslama tarihlerini isim sýralý olarak listeleyiniz. 
+  NOT: calisani olmasa bile bolum ismi gosterilmelidir.
+------------------------------------------------------------------------------*/
+	SELECT p.personel_isim, b.bolum_isim, p.ise_baslama
+	FROM bolumler b 
+	LEFT JOIN personel p 
+	ON b.bolum_id = p.bolum_id
+	WHERE b.bolum_id IN(30, 40, 50)
+	ORDER BY b.bolum_isim;
+
+/* -----------------------------------------------------------------------------
+  ORNEK3: Tüm bolumlerde calisan personelin isimlerini, bolum isimlerini ve 
+  maaslarini bolum ve maas siraali listeleyiniz. 
+  NOT: calisani olmasa bile bolum ismi gosterilmelidir.
+------------------------------------------------------------------------------*/
+	SELECT b.bolum_isim, p.personel_isim, p.maas
+	FROM personel p
+	RIGHT JOIN bolumler b
+	ON b.bolum_id = p.bolum_id
+	ORDER BY b.bolum_isim, p.maas DESC;
+
+/* -----------------------------------------------------------------------------
+  ORNEK4: SATIS ve MUDURLUK bolumlerinde calisan personelin maaslari 2000'den 
+  buyuk olanlarinin isim,bolum ve maas bilgilerini bolume ve isme gore
+  siralayarak listeleyiniz.
+------------------------------------------------------------------------------*/ 
+	SELECT p.personel_isim, b.bolum_isim, p.maas
+	FROM personel p
+	FULL JOIN bolumler b
+	ON p.bolum_id = b.bolum_id AND p.maas > 2000
+	WHERE b.bolum_id IN(20, 30)
+	ORDER BY b.bolum_isim, p.personel_isim;
+	
+/* -----------------------------------------------------------------------------
+  ORNEK5: MUDUR’u Mesut veya Emine olan personelin bolumlerini,isimlerini,  
+  maaslarini ve mudur isimlerini maas siralý olarak (Çoktan aza) listeleyiniz.
+------------------------------------------------------------------------------*/
+	SELECT p.personel_isim, b.bolum_isim, p.maas, (SELECT personel_isim FROM personel
+												  WHERE personel_id = p.mudur_id) AS mudur_isim
+	FROM personel p 
+	FULL JOIN bolumler b 
+	ON p.bolum_id = b.bolum_id 
+	WHERE p.mudur_id IN(7698, 7788)
+	ORDER BY p.maas DESC;
